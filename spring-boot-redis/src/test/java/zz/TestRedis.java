@@ -130,6 +130,12 @@ public class TestRedis {
         log.debug("user=" + user);
         Assert.assertEquals(ANOTHER_NAME, user.getName());
 
+        // 直接调用 get 会走缓存，通过 innerCall 来调用 get 不会走缓存
+        log.debug("------ before");
+        userService.get(USER_ID);
+        log.debug("------ middle");
+        userService.innerCall(USER_ID);
+        log.debug("------ after");
 
         // 另一种修改的方式
         final String NEW_NAME = "updated";
@@ -150,4 +156,5 @@ public class TestRedis {
         userService.delete(USER_ID);
 
     }
+
 }

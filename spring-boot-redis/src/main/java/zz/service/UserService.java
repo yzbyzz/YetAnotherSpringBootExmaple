@@ -52,4 +52,9 @@ public class UserService {
         user.setName(name);
         return user;
     }
+
+    public void innerCall(int userId) {
+        log.debug("[++] innerCall");
+        get(userId);
+    }
 }
