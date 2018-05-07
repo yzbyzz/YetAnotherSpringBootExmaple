@@ -24,6 +24,9 @@ out
 
 .DS_Store
 
+# my ignore file
+_.*
+
 # Package Files #
 *.jar
 *.war
