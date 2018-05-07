@@ -9,6 +9,7 @@
 本项目的代码基本都使用了该插件。
 
 在 IDEA 中使用该插件的方法如下：
+
     1. 在 Idea 中安装插件
         - MacOs:
             Preferences > Settings > Plugins > Browse repositories... > Search for "lombok" > Install Plugin
@@ -17,7 +18,7 @@
         - Manually:
             Download the latest release and install it manually using Preferences > Plugins > Install plugin from disk...
 
-    1. 在 Idea 中开启`注解处理`
+    2. 在 Idea 中开启`注解处理`
         - Mac
             >  Click `Preferences` -> `Build, Execution, Deployment` -> `Compiler` -> `Annotation Processors`. Click `Enable Annotation Processing`
         - Windows
