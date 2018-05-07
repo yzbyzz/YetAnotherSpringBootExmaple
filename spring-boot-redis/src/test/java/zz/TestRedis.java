@@ -151,7 +151,7 @@ public class TestRedis {
         log.debug("user=" + user);
         Assert.assertEquals(userService.DEFAULT_NAME, user.getName());
 
-        // 即使 cache 中没有该数据，也会指向 delete 中的逻辑
+        // 即使 cache 中没有该数据，也会执行 delete 中的逻辑
         userService.delete(USER_ID);
         userService.delete(USER_ID);
 
