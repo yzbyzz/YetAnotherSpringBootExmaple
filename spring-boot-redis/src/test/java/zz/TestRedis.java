@@ -14,6 +14,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import zz.domain.User;
 import zz.service.UserService;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * zz.TestRedis
  *
@@ -36,8 +39,13 @@ public class TestRedis {
 
     @Test
     public void testSerializer() {
+        // 1.
         // 这里的 opsForValue().get() 的参数必须转成 String 类型。
         // 除非在 RedisConfig 中 将 keySerializer 设置成 GenericJackson2JsonRedisSerializer 等能将其他类型转换成 String 的。
+
+        // 2.
+        // 如果切换了 RedisConfig 中的 ValueSerializer，要先用 redis-cli 将其中的旧数据删除。
+        // 不同 Serializer 格式之间的转换可能存在问题。
 
         final int ID = 123;
         User oldUser;
@@ -57,6 +65,19 @@ public class TestRedis {
 
         Assert.assertEquals(user.getId(), newUser.getId());
         Assert.assertEquals(user.getName(), newUser.getName());
+
+
+        List<User> userList = new LinkedList<>();
+        userList.add(user);
+        user.setId(233);
+        user.setName("new");
+        userList.add(user);
+
+        redisTemplate.opsForValue().set("userList", userList);
+        List<User> newUserList;
+        newUserList = (List<User>) redisTemplate.opsForValue().get("userList");
+
+        Assert.assertEquals(userList, newUserList);
     }
 
     @Test

@@ -1,5 +1,8 @@
 package zz.config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -12,6 +15,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.lang.reflect.Method;
@@ -76,6 +81,22 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
 
+    // value serializer
+
+    private Jackson2JsonRedisSerializer getJackson2JsonRedisSerializer() {
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        ObjectMapper om = new ObjectMapper();
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(om);
+
+        return jackson2JsonRedisSerializer;
+    }
+
+    private GenericJackson2JsonRedisSerializer getGenericJackson2JsonRedisSerializer() {
+        return new GenericJackson2JsonRedisSerializer();
+    }
+
     /**
      *
      * Once configured, the template is thread-safe and can be reused across multiple instances.
@@ -89,24 +110,19 @@ public class RedisConfig extends CachingConfigurerSupport {
         // key serializer
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
 
-        // value serializer
 
+        RedisSerializer valueRedisSerializer;
         // -- 1 Jackson2JsonRedisSerializer
-        // Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        // ObjectMapper om = new ObjectMapper();
-        // om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        // om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        // jackson2JsonRedisSerializer.setObjectMapper(om);
+        // valueRedisSerializer = getJackson2JsonRedisSerializer();
 
         // -- 2 GenericJackson2JsonRedisSerializer
-        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer =
-                new GenericJackson2JsonRedisSerializer();
+        valueRedisSerializer = getGenericJackson2JsonRedisSerializer();
 
         // set serializer
         template.setKeySerializer(stringRedisSerializer);
-        template.setValueSerializer(genericJackson2JsonRedisSerializer);
+        template.setValueSerializer(valueRedisSerializer);
         template.setHashKeySerializer(stringRedisSerializer);
-        template.setHashValueSerializer(genericJackson2JsonRedisSerializer);
+        template.setHashValueSerializer(valueRedisSerializer);
 
         template.afterPropertiesSet();
         return template;
